@@ -1,0 +1,26 @@
+module "workload-eks" {
+  source                                  = "../../../../_terraform_modules/xebia/terraform-aws-xebia-eks-module-update"
+  region                                  = var.region
+  extra_tags                              = var.extra_tags
+  assume_role_arn                         = var.assume_role_arn
+  cluster_name                            = var.cluster_name
+  cluster_version                         = var.cluster_version
+  enable_irsa                             = var.enable_irsa
+  tags                                    = var.tags
+  vpc_id                                  = var.vpc_id
+  subnet_ids                              = var.subnet_ids
+  endpoint_private_access                 = var.endpoint_private_access
+  endpoint_public_access                  = var.endpoint_public_access
+  public_access_cidrs                     = var.public_access_cidrs
+  cluster_security_group_tags             = var.cluster_security_group_tags
+  cluster_security_group_additional_rules = var.cluster_security_group_additional_rules
+  cluster_additional_security_group_ids   = var.cluster_additional_security_group_ids
+  enabled_cluster_log_types               = var.enabled_cluster_log_types
+  key_arn                                 = var.key_arn
+  ip_family                               = var.ip_family
+  service_ipv4_cidr                       = var.service_ipv4_cidr
+  create_cni_ipv6_iam_policy              = var.create_cni_ipv6_iam_policy
+  node_security_group_additional_rules    = var.node_security_group_additional_rules
+  eks_managed_node_group_defaults         = var.eks_managed_node_group_defaults
+  eks_managed_node_groups                 = var.eks_managed_node_groups
+}

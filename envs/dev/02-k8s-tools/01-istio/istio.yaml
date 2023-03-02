@@ -1,0 +1,116 @@
+apiVersion: install.istio.io/v1beta1
+kind: IstioOperator
+spec:
+  profile: default
+  hub: docker.io/istio
+  meshConfig:
+    enableTracing: true
+    defaultConfig:
+      tracing:
+        sampling: 100
+        zipkin:
+          address: zipkin.istio-system:9411
+  namespace: istio-system
+  components:
+    egressGateways:
+    - name: istio-egressgateway
+      enabled: false
+      k8s:
+        resources:
+          requests:
+            cpu: 60m
+            memory: 200Mi
+          limits:
+            cpu: 100m
+            memory: 400Mi
+        service:
+          type: NodePort
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 200Mi
+          limits:
+            cpu: 100m
+            memory: 400Mi
+        service:
+          type: NodePort
+        serviceAnnotations: 
+          # kubernetes.io/ingress.class: alb
+          # alb.ingress.kubernetes.io/scheme: internal
+          # alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:ap-south-1:***:certificate/fcaa9fd2-1b55-48d7-92f2-e829f7bafafd"
+          # alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+          # alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+        priorityClassName: ""
+        # nodeSelector:
+        #   kubernetes.io/os: linux
+        # affinity:
+        #   nodeAffinity:
+        #     requiredDuringSchedulingIgnoredDuringExecution:
+        #       nodeSelectorTerms:
+        #       - matchExpressions:
+        #         - key: topology.kubernetes.io/zone
+        #           operator: In
+        #           values:
+        #           - ap-south-1
+        #     preferredDuringSchedulingIgnoredDuringExecution:
+        #     - weight: 1
+        #       preference:
+        #         matchExpressions:
+        #         - key: " "
+        #           operator: In
+        #           values:
+        #           - " "
+        # tolerations:
+        # - key: "key1"
+        #   operator: "Equal"
+        #   value: "value1"
+        #   effect: "NoSchedule" 
+    istiodRemote:
+      enabled: false
+    pilot:
+        enabled: true
+        k8s:
+          env:
+          - name: PILOT_TRACE_SAMPLING
+            value: "100"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+            limits:
+              cpu: 50m
+              memory: 200Mi
+
+  values:
+    global:
+      configValidation: true
+      istiod:
+        enableAnalysis: false 
+      multiCluster:
+        enabled:	false
+        clusterName: ""
+      jwtPolicy: third-party-jwt
+      logAsJson: false
+      logging:
+        level: default:info
+      mountMtlsCerts: false
+      network: ""
+      omitSidecarInjectorConfigMap: false
+      oneNamespace: false
+      operatorManageWebhooks: false
+      pilotCertProvider: istiod
+      priorityClassName: ""
+
+    telemetry:
+      enabled: true
+      v2:
+        enabled: true
+        metadataExchange:
+          wasmEnabled: false
+        prometheus:
+          enabled: true
+          wasmEnabled: false
